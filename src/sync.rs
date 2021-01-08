@@ -56,8 +56,14 @@ impl<T> AsyncOnceCell<T> {
         self.cell.into_inner()
     }
 
-    pub fn set(&self, value: T) -> Result<(), T> {
-        self.cell.set(value)
+    pub fn swap(&mut self, value: Option<T>) -> Option<T> {
+        let old = self.cell.take();
+
+        if let Some(value) = value {
+            let _ = self.cell.set(value);
+        }
+
+        old
     }
 
     pub fn take(&mut self) -> Option<T> {
